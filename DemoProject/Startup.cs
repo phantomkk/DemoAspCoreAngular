@@ -28,6 +28,7 @@ namespace DemoProject
         {
             Configuration = configuration;
         }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public IConfiguration Configuration { get; }
 
@@ -39,6 +40,15 @@ namespace DemoProject
             services.AddSwaggerDocument();
             services.AddLogging();
             services.AddScoped(typeof(IVozImageService), typeof(VozImageService));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200");
+                });
+            });
 
             ConfigDependencyInjection(services);
             ConfigAutomapper(services);
@@ -61,6 +71,7 @@ namespace DemoProject
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseMvc(routes =>
             {
